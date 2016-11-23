@@ -1,33 +1,25 @@
 // @flow
 
-export function getStringParam(params: {[key: string]: any}, path: string, defaultValue: string): string {
-    if (params[path] == null || typeof params[path] != 'string') {
-        return defaultValue;
-    }
-
-    return params[path];
+export function valueOrDefault<T>(arg: ?T, defaultValue: T): T {
+    return arg == null ? defaultValue : arg;
 }
 
-export function getStringOrNull(params: {[key: string]: any}, path: string): ?string {
-    if (params[path] == null || typeof params[path] != 'string') {
-        return null;
+export function strictFirstNotNull<T>(args: Array<?T>, defaultValue: T): T {
+    for (let arg of args) {
+        if (arg != null) {
+            return arg;
+        }
     }
 
-    return params[path];
+    return defaultValue;
 }
 
-export function getNumberParam(params: {[key: string]: any}, path: string, defaultValue: number): number {
-    if (params[path] == null || typeof params[path] != 'number') {
-        return defaultValue;
+export function firstNotNull<T>(args: Array<?T>, defaultValue: T): ?T {
+    for (let arg of args) {
+        if (arg != null) {
+            return arg;
+        }
     }
 
-    return params[path];
-}
-
-export function getNumberOrNull(params: {[key: string]: any}, path: string): ?number {
-    if (params[path] == null || typeof params[path] != 'number') {
-        return null;
-    }
-
-    return params[path];
+    return null;
 }

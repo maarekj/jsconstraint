@@ -4,8 +4,8 @@
 
 ## Installation
 
-`npm install --save jsconstraint`
+```npm install --save jsconstraint```
 
 or
 
-`yarn add jsconstraint`
+```yarn add jsconstraint```

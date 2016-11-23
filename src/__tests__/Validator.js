@@ -18,36 +18,36 @@ describe('Test validator', () => {
     describe('validate simple value', () => {
         describe('with valid value', () => {
             it('with one constraint', () => {
-                const violations = validator.validate('value', {name: "not_null", params: {}});
+                const violations = validator.validate('value', {name: "not_null"});
                 expect(violations.isEmpty()).toBe(true);
             });
 
             it('with one constraint wrapped in array', () => {
-                const violations = validator.validate('value', [{name: "not_null", params: {}}]);
+                const violations = validator.validate('value', [{name: "not_null"}]);
                 expect(violations.isEmpty()).toBe(true);
             });
 
             it('with two constraints', () => {
-                const violations = validator.validate('value', [{name: "not_null", params: {}}, {name: "length", params: {max: 10}}]);
+                const violations = validator.validate('value', [{name: "not_null"}, {name: "length", max: 10}]);
                 expect(violations.isEmpty()).toBe(true);
             });
         });
 
         describe('with invalid value', () => {
             it('with one constraint', () => {
-                const violations = validator.validate(null, {name: "not_null", params: {}});
+                const violations = validator.validate(null, {name: "not_null"});
                 expect(violations.count()).toBe(1);
                 expect(violations.toArray()[0].getMessage()).toBe('validations.not_null');
             });
 
             it('with one constraint wrapped in array', () => {
-                const violations = validator.validate(null, [{name: "not_null", params: {}}]);
+                const violations = validator.validate(null, [{name: "not_null"}]);
                 expect(violations.count()).toBe(1);
                 expect(violations.toArray()[0].getMessage()).toBe('validations.not_null');
             });
 
             describe('with two constraints', () => {
-                const constraints = [{name: 'length', params: {min: 5}}, {name: 'length', params: {min: 10}}];
+                const constraints = [{name: 'length', min: 5}, {name: 'length', min: 10}];
 
                 it('with one valid constraint and one invalid constraint', () => {
                     const violations = validator.validate("1234567", constraints);
@@ -72,27 +72,27 @@ describe('Test validator', () => {
             const object = {lastname: "maarek", firstname: "joseph"};
 
             it('with one constraint on lastname', () => {
-                const violations = validator.validate(object, {name: 'collection', params: {fields: {
-                    lastname: {name: 'not_null', params: {}},
-                }}});
+                const violations = validator.validate(object, {name: 'collection', fields: {
+                    lastname: {name: 'not_null'},
+                }});
 
                 expect(violations.isEmpty()).toBe(true);
             });
 
             it('with one constraint on lastname and one constraint on firstname', () => {
-                const violations = validator.validate(object, {name: 'collection', params: {fields: {
-                    lastname: {name: 'not_null', params: {}},
-                    firstname: {name: 'not_null', params: {}},
-                }}});
+                const violations = validator.validate(object, {name: 'collection', fields: {
+                    lastname: {name: 'not_null'},
+                    firstname: {name: 'not_null'},
+                }});
 
                 expect(violations.isEmpty()).toBe(true);
             });
 
             it('with two constraint on each fields', () => {
-                const violations = validator.validate(object, {name: 'collection', params: {fields: {
-                    lastname: [{name: 'not_null', params: {}}, {name: 'length', params: {min: 5}}],
-                    firstname: [{name: 'not_null', params: {}}, {name: 'length', params: {min: 5}}],
-                }}});
+                const violations = validator.validate(object, {name: 'collection', fields: {
+                    lastname: [{name: 'not_null'}, {name: 'length', min: 5}],
+                    firstname: [{name: 'not_null'}, {name: 'length', min: 5}],
+                }});
 
                 expect(violations.isEmpty()).toBe(true);
             });
@@ -102,9 +102,9 @@ describe('Test validator', () => {
             const object = {lastname: "maarek", firstname: "joseph"};
 
             it('with one constraint on lastname', () => {
-                let violations = validator.validate(object, {name: 'collection', params: {fields: {
-                    lastname: {name: 'length', params: {min: 100}},
-                }}}).toArray();
+                let violations = validator.validate(object, {name: 'collection', fields: {
+                    lastname: {name: 'length', min: 100},
+                }}).toArray();
                 violations = sortViolations(violations);
 
                 expect(violations.length).toBe(1);
@@ -114,10 +114,10 @@ describe('Test validator', () => {
             });
 
             it('with one constraint on lastname and one constraint on firstname', () => {
-                let violations = validator.validate(object, {name: 'collection', params: {fields: {
-                    lastname: {name: 'length', params: {min: 100}},
-                    firstname: {name: 'length', params: {min: 100}},
-                }}}).toArray();
+                let violations = validator.validate(object, {name: 'collection', fields: {
+                    lastname: {name: 'length', min: 100},
+                    firstname: {name: 'length', min: 100},
+                }}).toArray();
                 violations = sortViolations(violations);
 
                 expect(violations.length).toBe(2);
@@ -131,10 +131,10 @@ describe('Test validator', () => {
 
             describe('with two constraint on each fields', () => {
                 it('with one valid property and one invalid property', () => {
-                    let violations = validator.validate(object, {name: 'collection', params: {fields: {
-                        lastname: [{name: 'length', params: {min: 100}}, {name: 'length', params: {min: 50}}],
-                        firstname: [{name: 'length', params: {min: 2}}, {name: 'length', params: {min: 5}}],
-                    }}}).toArray();
+                    let violations = validator.validate(object, {name: 'collection', fields: {
+                        lastname: [{name: 'length', min: 100}, {name: 'length', min: 50}],
+                        firstname: [{name: 'length', min: 2}, {name: 'length', min: 5}],
+                    }}).toArray();
                     violations = sortViolations(violations);
 
                     expect(violations.length).toBe(2);
@@ -147,10 +147,10 @@ describe('Test validator', () => {
                 });
 
                 it('with two invalid properties', () => {
-                    let violations = validator.validate(object, {name: 'collection', params: {fields: {
-                        lastname: [{name: 'length', params: {min: 100}}, {name: 'length', params: {min: 50}}],
-                        firstname: [{name: 'length', params: {min: 100}}, {name: 'length', params: {min: 50}}],
-                    }}}).toArray();
+                    let violations = validator.validate(object, {name: 'collection', fields: {
+                        lastname: [{name: 'length', min: 100}, {name: 'length', min: 50}],
+                        firstname: [{name: 'length', min: 100}, {name: 'length', min: 50}],
+                    }}).toArray();
                     violations = sortViolations(violations);
 
                     expect(violations.length).toBe(4);
@@ -172,16 +172,22 @@ describe('Test validator', () => {
     });
 
     describe('with nested object', () => {
-        const constraints = {name: 'collection', params: {fields: {
-            age: {name: 'not_null', params: {}},
+        const constraints = {name: 'collection', fields: {
+            age: {name: 'not_null'},
             name: [
-                {name: 'not_null', params: {}},
-                {name: 'collection', params: {fields: {
-                    lastname: {name: 'not_null', params: {}},
-                    firstname: {name: 'not_null', params: {}},
-                }}},
+                {name: 'not_null'},
+                {name: 'collection', fields: {
+                    lastname: {name: 'not_null'},
+                    firstname: {name: 'not_null'},
+                }},
             ],
-        }}};
+            address: {
+                name: 'collection',
+                fields: {
+                    city: {name: 'not_null'},
+                },
+            },
+        }};
 
         it('with valid object', () => {
             const object = {
@@ -189,6 +195,9 @@ describe('Test validator', () => {
                 name: {
                     lastname: 'Maarek',
                     firstname: 'Joseph',
+                },
+                address: {
+                    city: 'Paris',
                 },
             };
 
@@ -202,6 +211,9 @@ describe('Test validator', () => {
                 name: {
                     lastname: 'Maarek',
                     firstname: 'Joseph',
+                },
+                address: {
+                    city: 'Paris',
                 },
             };
 
@@ -220,6 +232,9 @@ describe('Test validator', () => {
                     lastname: null,
                     firstname: 'Joseph',
                 },
+                address: {
+                    city: 'Paris',
+                },
             };
 
             let violations = validator.validate(object, constraints).toArray();
@@ -234,6 +249,9 @@ describe('Test validator', () => {
             const object = {
                 age: 26,
                 name: null,
+                address: {
+                    city: 'Paris',
+                },
             };
 
             let violations = validator.validate(object, constraints).toArray();
@@ -248,6 +266,9 @@ describe('Test validator', () => {
             const object = {
                 age: null,
                 name: null,
+                address: {
+                    city: 'Paris',
+                },
             };
 
             let violations = validator.validate(object, constraints).toArray();
@@ -269,6 +290,9 @@ describe('Test validator', () => {
                     lastname: null,
                     firstname: null,
                 },
+                address: {
+                    city: 'Paris',
+                },
             };
 
             let violations = validator.validate(object, constraints).toArray();
@@ -284,6 +308,20 @@ describe('Test validator', () => {
 
             expect(violations[2].getMessage()).toBe('validations.not_null');
             expect(violations[2].getPath()).toBe('name.lastname');
+        });
+
+        it('with address equal null', () => {
+            const object = {
+                age: 26,
+                name: {
+                    lastname: "Maarek",
+                    firstname: "Joseph",
+                },
+                address: null,
+            };
+
+            let violations = validator.validate(object, constraints);
+            expect(violations.isEmpty()).toBe(true);
         });
     });
 });

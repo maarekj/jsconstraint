@@ -1,9 +1,11 @@
 // @flow
 
+import invariant from 'invariant';
+
 import ExecutionContext from '../ExecutionContext';
 import type {ConstraintType} from '../types'
 import Violation from '../Violation';
-import {getStringParam, getNumberOrNull} from './utils';
+import {valueOrDefault} from './utils';
 
 export default class LengthValidator {
     acceptConstraint(constraint: ConstraintType): bool {
@@ -11,25 +13,25 @@ export default class LengthValidator {
     }
 
     validate(value: any, constraint: ConstraintType, context: ExecutionContext) {
+        invariant(constraint.name === 'length', `LengthValidator can validate only "length" constraint not "${constraint.name}" constraint.`);
+
         if (value === null || value === undefined || value === '') {
             return;
         }
 
         if (typeof value != 'string') {
-            const notStringMessage = getStringParam(constraint.params, 'message', 'validations.not_string');
+            const notStringMessage = valueOrDefault(constraint.message, 'validations.not_string');
             context.addViolation(new Violation(notStringMessage));
             return;
         }
 
-        const max = getNumberOrNull(constraint.params, 'max');
-        if (max != null && value.length > max) {
-            const maxMessage = getStringParam(constraint.params, 'maxMessage', 'validations.length_max');
+        if (constraint.max != null && value.length > constraint.max) {
+            const maxMessage = valueOrDefault(constraint.maxMessage, 'validations.length_max');
             context.addViolation(new Violation(maxMessage));
         }
 
-        const min = getNumberOrNull(constraint.params, 'min');
-        if (min != null && value.length < min) {
-            const minMessage = getStringParam(constraint.params, 'minMessage', 'validations.length_min');
+        if (constraint.min != null && value.length < constraint.min) {
+            const minMessage = valueOrDefault(constraint.minMessage, 'validations.length_min');
             context.addViolation(new Violation(minMessage));
         }
     }
