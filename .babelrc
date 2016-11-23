@@ -1,0 +1,10 @@
+{
+    "presets": ["latest"],
+    "plugins": [
+        "syntax-flow",
+        "transform-flow-strip-types",
+        "transform-es2015-parameters",
+        "transform-es2015-destructuring",
+        "transform-object-rest-spread"
+    ]
+}
