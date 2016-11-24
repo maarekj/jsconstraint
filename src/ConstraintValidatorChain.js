@@ -1,6 +1,8 @@
 // @flow
 
-import ExecutionContext from './ExecutionContext';
+import Q from 'q';
+
+import {ExecutionContextInterface} from './ExecutionContextInterface';
 import type {ConstraintValidatorInterface} from './ConstraintValidatorInterface';
 import type {ConstraintType} from './types';
 
@@ -27,11 +29,20 @@ export default class ConstraintValidatorChain {
         return false;
     }
 
-    validate(value: any, constraint: ConstraintType, context: ExecutionContext): void {
+    validate(value: any, constraint: ConstraintType, context: ExecutionContextInterface): void {
         for (const constraintValidator of this.validators) {
             if (constraintValidator.acceptConstraint(constraint)) {
                 constraintValidator.validate(value, constraint, context);
             }
         }
+    }
+
+    asyncValidate(value: any, constraint: ConstraintType, context: ExecutionContextInterface): Promise<any> {
+        for (const constraintValidator of this.validators) {
+            if (constraintValidator.acceptConstraint(constraint)) {
+                return constraintValidator.asyncValidate(value, constraint, context);
+            }
+        }
+        return Q(null);
     }
 }

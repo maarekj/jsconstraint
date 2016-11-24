@@ -1,5 +1,8 @@
 // @flow
 
+import Q from 'q';
+
+import AsyncExecutionContext from './AsyncExecutionContext';
 import ExecutionContext from './ExecutionContext';
 import type {ConstraintType} from './types';
 import type {ConstraintValidatorInterface} from './ConstraintValidatorInterface';
@@ -15,17 +18,32 @@ export default class Validator {
         this.translator = translator;
     }
 
-    validate(value: any, constraints: ConstraintType|ConstraintType[]): ViolationList {
-        const context = new ExecutionContext(value, this.translator, this);
-        return this.validateWithContext(value, constraints, context);
+    asyncValidate(value: any, constraints: ConstraintType|ConstraintType[]): Promise<ViolationList> {
+        const context = new AsyncExecutionContext({
+            translator: this.translator,
+            constraintValidator: this.constraintValidator,
+            parentContext: null,
+            prefixPath: null,
+            root: value,
+            currentObject: value,
+            violations: new ViolationList(),
+        });
+        return context.validate(value, constraints).then(() => {
+            return context.getViolations();
+        });
     }
 
-    validateWithContext(value: any, constraints: ConstraintType|ConstraintType[], context: ExecutionContext): ViolationList {
-        constraints = Array.isArray(constraints) ? constraints : [constraints];
-
-        for (const constraint of constraints) {
-            this.constraintValidator.validate(value, constraint, context);
-        }
+    validate(value: any, constraints: ConstraintType|ConstraintType[]): ViolationList {
+        const context = new ExecutionContext({
+            translator: this.translator,
+            constraintValidator: this.constraintValidator,
+            parentContext: null,
+            prefixPath: null,
+            root: value,
+            currentObject: value,
+            violations: new ViolationList(),
+        });
+        context.validate(value, constraints);
 
         return context.getViolations();
     }

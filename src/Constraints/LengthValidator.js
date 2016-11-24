@@ -1,8 +1,9 @@
 // @flow
 
+import Q from 'q';
 import invariant from 'invariant';
 
-import ExecutionContext from '../ExecutionContext';
+import {ExecutionContextInterface} from '../ExecutionContextInterface';
 import type {ConstraintType} from '../types'
 import Violation from '../Violation';
 import {valueOrDefault} from './utils';
@@ -12,7 +13,7 @@ export default class LengthValidator {
         return constraint.name === 'length';
     }
 
-    validate(value: any, constraint: ConstraintType, context: ExecutionContext) {
+    validate(value: any, constraint: ConstraintType, context: ExecutionContextInterface) {
         invariant(constraint.name === 'length', `LengthValidator can validate only "length" constraint not "${constraint.name}" constraint.`);
 
         if (value === null || value === undefined || value === '') {
@@ -34,5 +35,9 @@ export default class LengthValidator {
             const minMessage = valueOrDefault(constraint.minMessage, 'validations.length_min');
             context.addViolation(new Violation(minMessage));
         }
+    }
+
+    asyncValidate(value: any, constraint: ConstraintType, context: ExecutionContextInterface): Promise<any> {
+        return Q(this.validate(value, constraint, context));
     }
 }
